@@ -79,14 +79,6 @@ footer{text-align:center;color:#7b91a2;font-size:11px;line-height:1.55;padding:1
       return false;
     }
   });
-  /* Kiểm tra domain (tùy chọn) — bỏ comment và sửa nếu triển khai thật
-  var allowed = ['yourdomain.com','localhost'];
-  var host = location.hostname;
-  var ok = allowed.some(function(d){ return host === d || host.slice(-(d.length+1)) === '.'+d; });
-  if (!ok) {
-    document.body.innerHTML = '<h2 style="font-family:Arial;text-align:center;padding:40px">Nội dung này chỉ được xem trên trang gốc.</h2>';
-  }
-  */
 })();
 </script>
 <div class="wrap">
@@ -112,7 +104,7 @@ footer{text-align:center;color:#7b91a2;font-size:11px;line-height:1.55;padding:1
   <marker id="arrB" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="#249bd0"/></marker>
   <marker id="arrG" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="#e6a32b"/></marker>
   <clipPath id="flaskClip"><path d="M205 160L205 262C205 281 157 306 157 367C157 424 199 453 252 453C305 453 347 424 347 367C347 306 299 281 299 262L299 160Z"/></clipPath>
-  <clipPath id="receiverClip"><path d="M701 397L701 478Q701 498 748 498Q795 498 795 478L795 397Z"/></clipPath>
+  <clipPath id="receiverClip"><path d="M701 420L701 478Q701 498 748 498Q795 498 795 478L795 420Z"/></clipPath>
  </defs>
  <rect x="10" y="10" width="880" height="550" rx="22" fill="#f8fcff" stroke="#dcebf4"/>
  <circle cx="770" cy="83" r="38" fill="#e7f6fc"/><circle cx="770" cy="83" r="22" fill="#d4f0fa"/>
@@ -148,18 +140,25 @@ footer{text-align:center;color:#7b91a2;font-size:11px;line-height:1.55;padding:1
  <rect x="294" y="103" width="4" height="27" rx="2" fill="#e56c69" id="thermoMercury"/>
  <circle cx="296" cy="135" r="7" fill="#e56c69"/>
  <text x="312" y="65" font-size="13" fill="#284b64" font-weight="700">Nhiệt kế</text>
- <!-- vapor delivery tube -->
- <path d="M299 111H392Q411 111 411 131V184" stroke="#438bad" stroke-width="17" fill="none" stroke-linejoin="round"/>
- <path d="M299 111H392Q411 111 411 131V184" stroke="#f4fdff" stroke-width="8" fill="none" stroke-linejoin="round"/>
- <path d="M299 111H392Q411 111 411 131V184" stroke="#e5a12c" stroke-width="3.5" fill="none" stroke-dasharray="8 12" opacity="0" id="vaporDash"/>
- <text x="350" y="88" text-anchor="middle" font-size="12" fill="#59778c">Ống dẫn hơi</text>
- <!-- condenser jacket -->
+
+ <!-- LỚP VỎ ỐNG SINH HÀN (Vẽ trước để ống dẫn hơi đè lên) -->
  <path d="M411 184L653 355" stroke="#4d93b5" stroke-width="76" stroke-linecap="round" opacity=".95"/>
  <path d="M411 184L653 355" stroke="url(#cool)" stroke-width="66" stroke-linecap="round"/>
  <path d="M411 184L653 355" stroke="#4b8faf" stroke-width="17" stroke-linecap="round"/>
  <path d="M411 184L653 355" stroke="#f9feff" stroke-width="8" stroke-linecap="round"/>
+
+ <!-- ỐNG DẪN HƠI (Vẽ đè lên vỏ ống sinh hàn để tạo cảm giác xuyên qua) -->
+ <!-- Đường ống nối liền mạch từ nhiệt kế, đi xuống và chập vào ống sinh hàn -->
+ <path d="M299 111H392Q411 111 411 131V184L653 355" stroke="#438bad" stroke-width="17" fill="none" stroke-linejoin="round"/>
+ <path d="M299 111H392Q411 111 411 131V184L653 355" stroke="#f4fdff" stroke-width="8" fill="none" stroke-linejoin="round"/>
+ 
+ <!-- Các hạt hơi chạy liên tục trên đường ống mới -->
+ <path d="M299 111H392Q411 111 411 131V184L653 355" stroke="#e5a12c" stroke-width="3.5" fill="none" stroke-dasharray="8 12" opacity="0" id="vaporDash"/>
+ 
+ <text x="350" y="88" text-anchor="middle" font-size="12" fill="#59778c">Ống dẫn hơi</text>
  <!-- inner vapor -->
  <path d="M411 184L653 355" stroke="#e5a12c" stroke-width="4" stroke-dasharray="9 14" opacity="0" id="innerVapor"/>
+
  <!-- water inlet/outlet branches -->
  <path d="M461 219L438 277L396 277" stroke="#279ed1" stroke-width="10" fill="none" stroke-linecap="round"/>
  <path d="M606 321L632 262L680 262" stroke="#279ed1" stroke-width="10" fill="none" stroke-linecap="round"/>
@@ -177,21 +176,31 @@ footer{text-align:center;color:#7b91a2;font-size:11px;line-height:1.55;padding:1
   <circle r="3.5"><animateMotion dur="2.8s" begin="-1s" repeatCount="indefinite" path="M396 277L438 277L461 219L606 321L632 262L680 262"/></circle>
   <circle r="3"><animateMotion dur="2.8s" begin="-2s" repeatCount="indefinite" path="M396 277L438 277L461 219L606 321L632 262L680 262"/></circle>
  </g>
- <!-- condensate droplets along condenser to receiver -->
- <g id="condensate" opacity="0">
-  <circle r="5" fill="#efb844"><animateMotion dur="2.2s" repeatCount="indefinite" path="M420 190L653 355L696 390"/></circle>
-  <circle r="4" fill="#f6cd70"><animateMotion dur="2.2s" begin="-.75s" repeatCount="indefinite" path="M420 190L653 355L696 390"/></circle>
-  <circle r="3.5" fill="#e9a42d"><animateMotion dur="2.2s" begin="-1.5s" repeatCount="indefinite" path="M420 190L653 355L696 390"/></circle>
- </g>
- <!-- receiver -->
- <path d="M653 355L704 393V478Q704 500 750 500Q796 500 796 478V393" fill="url(#glass)" stroke="#438bad" stroke-width="4"/>
- <path d="M704 393H796" stroke="#438bad" stroke-width="4"/>
+ 
+ <!-- ====== BÌNH HỨNG & ĐẦU THUÔN NHỎ ====== -->
+ <path d="M653 355L680 380L680 400L708 415" stroke="#4b8faf" stroke-width="12" fill="none" stroke-linejoin="round"/>
+ <path d="M653 355L680 380L680 400L708 415" stroke="#f9feff" stroke-width="6" fill="none" stroke-linejoin="round"/>
+ <path d="M653 355L680 380L680 400L708 415" stroke="#438bad" stroke-width="2" fill="none" stroke-linejoin="round"/>
+ 
+ <path d="M700 420V478Q700 500 750 500Q800 500 800 478V420" fill="url(#glass)" stroke="#438bad" stroke-width="4"/>
+ <path d="M697 415H711" stroke="#438bad" stroke-width="4" stroke-linecap="round"/>
+ 
  <g clip-path="url(#receiverClip)">
   <rect id="receiverFill" x="696" y="487" width="110" height="20" fill="url(#collected)"/>
   <path id="receiverWave" d="M700 486Q725 480 750 486T800 486" stroke="#d99c2c" stroke-width="3" fill="none"/>
  </g>
+ 
+ <!-- Condensate droplets along condenser to receiver -->
+ <g id="condensate" opacity="0">
+  <circle r="5" fill="#efb844"><animateMotion dur="2.2s" repeatCount="indefinite" path="M420 190L653 355L680 380L708 415L750 490"/></circle>
+  <circle r="4" fill="#f6cd70"><animateMotion dur="2.2s" begin="-.75s" repeatCount="indefinite" path="M420 190L653 355L680 380L708 415L750 490"/></circle>
+  <circle r="3.5" fill="#e9a42d"><animateMotion dur="2.2s" begin="-1.5s" repeatCount="indefinite" path="M420 190L653 355L680 380L708 415L750 490"/></circle>
+ </g>
+ 
  <text x="750" y="526" text-anchor="middle" font-size="14" fill="#23475f" font-weight="700">Bình hứng</text>
  <text x="750" y="542" text-anchor="middle" font-size="10" fill="#71899b">Chất lỏng ngưng tụ</text>
+ <!-- ====== KẾT THÚC BÌNH HỨNG ====== -->
+
  <!-- animated particles on vapor path -->
  <g id="vaporParticles" opacity="0" fill="#f4b73f" stroke="#d58e1e" stroke-width="1">
   <circle r="5"><animateMotion dur="2.5s" repeatCount="indefinite" path="M302 111H392Q411 111 411 131V184L653 355"/></circle>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phòng thí nghiệm tương tác – Chưng cất</title>
+<style>
+:root{--ink:#18334b;--muted:#627b90;--blue:#249bd0;--cyan:#67d2e6;--gold:#f2b544;--green:#269879;--line:#d9e8f2;--paper:#f3f9fd}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 12% 5%,#e0f5ff 0,transparent 28%),linear-gradient(135deg,#eff7fc,#f8fbff 55%,#eaf8f6);font-family:Arial,"Be Vietnam Pro",sans-serif;color:var(--ink)}
+.wrap{max-width:1320px;margin:auto;padding:22px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:17px}
+h1{font-size:clamp(25px,3vw,38px);margin:0;color:#14344f;letter-spacing:-.7px}
+.subtitle{margin-top:7px;color:var(--muted);line-height:1.5}
+.tag{border:1px solid #c8e9f6;background:#e5f7ff;color:#14749e;border-radius:99px;padding:9px 14px;font-size:12px;font-weight:800;letter-spacing:.5px}
+.grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(290px,.75fr);gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:21px;box-shadow:0 12px 34px #204b6810;overflow:hidden}
+.cardhead{padding:15px 18px;border-bottom:1px solid #e8f0f5;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cardhead h2{font-size:17px;margin:0;color:#183b56}
+.micro{font-size:12px;color:#71899c}
+.scene{padding:9px;background:linear-gradient(180deg,#f8fcff,#edf7fc)}
+svg{width:100%;height:auto;display:block;position:relative}
+svg text{font-family:Arial,sans-serif}
+.controls{padding:14px 17px 17px;border-top:1px solid #e7eff5}
+.buttons{display:flex;gap:8px;flex-wrap:wrap}
+button{border:0;border-radius:11px;padding:10px 14px;font-weight:750;cursor:pointer;background:#edf4f8;color:#23435d;transition:.16s}
+button:hover{transform:translateY(-1px);filter:brightness(.98)}
+button:focus-visible{outline:3px solid #f3b544;outline-offset:2px}
+button.primary{background:linear-gradient(135deg,#258fc8,#31afd0);color:white;box-shadow:0 5px 12px #269bd033}
+button.softblue{background:#e5f5fc;color:#1476a7}
+button.active{background:#dff4fb;color:#087aa7;box-shadow:inset 0 0 0 1px #a9ddec}
+.status{display:flex;align-items:center;gap:9px;margin-top:12px;color:var(--muted);font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;background:#b7c6d1;flex:none}
+.dot.live{background:#22a77f;box-shadow:0 0 0 4px #dff6ee}
+.progress{height:8px;background:#e7f0f5;border-radius:99px;overflow:hidden;margin-top:10px}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,#268fc9,#63d0df);transition:width .18s}
+.key{display:flex;gap:14px;flex-wrap:wrap;padding:0 17px 13px;color:#6a8397;font-size:11px}
+.key span{display:flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:50%}
+.side{display:flex;flex-direction:column;gap:16px}
+.pad{padding:16px 18px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{padding:8px 10px;font-size:12px;background:#f0f5f8}
+.tab.selected{background:#def3fa;color:#0878a6}
+.explain{font-size:13px;line-height:1.6;color:var(--muted);min-height:72px;margin-top:12px}
+.explain strong{color:#183b56}
+.step{display:flex;gap:10px;margin:0 0 13px}
+.num{width:27px;height:27px;border-radius:9px;background:#e4f4fb;color:#1477a6;display:grid;place-items:center;font-weight:800;flex:none;font-size:13px}
+.step b{display:block;color:#1b3d57;font-size:13px;margin:1px 0 3px}
+.step p{margin:0;color:#6b8295;font-size:12px;line-height:1.45}
+.tip{background:#fff8e8;border:1px solid #f4e3b9;border-radius:13px;padding:12px;font-size:12px;line-height:1.5;color:#795c21}
+.tip b{color:#855b0c}
+.bottom{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:16px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.checkgrid label{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#5f788c;line-height:1.4}
+input{accent-color:#269879}
+.count{font-size:12px;color:#5d7b8e;margin-top:13px}
+.quiz label{display:block;padding:9px 10px;margin:7px 0;border:1px solid #e2ebf1;border-radius:10px;font-size:12px;cursor:pointer}
+.feedback{font-size:12px;font-weight:700;min-height:18px;margin-top:8px}
+footer{text-align:center;color:#7b91a2;font-size:11px;line-height:1.55;padding:18px 5px 4px}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45;transform:scale(1.08)}}
+#wm-layer text{pointer-events:none;user-select:none}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.wrap{padding:11px}.side,.bottom{display:flex;flex-direction:column}.checkgrid{grid-template-columns:1fr}.cardhead{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<script>
+/* ===== LỚP BẢO VỆ CƠ BẢN ===== */
+(function(){
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  document.addEventListener('keydown', function(e){
+    var k = (e.key || '').toUpperCase();
+    if (e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['I','J','C'].indexOf(k) !== -1) ||
+        (e.ctrlKey && k === 'U')) {
+      e.preventDefault();
+      return false;
+    }
+  });
+  /* Kiểm tra domain (tùy chọn) — bỏ comment và sửa nếu triển khai thật
+  var allowed = ['yourdomain.com','localhost'];
+  var host = location.hostname;
+  var ok = allowed.some(function(d){ return host === d || host.slice(-(d.length+1)) === '.'+d; });
+  if (!ok) {
+    document.body.innerHTML = '<h2 style="font-family:Arial;text-align:center;padding:40px">Nội dung này chỉ được xem trên trang gốc.</h2>';
+  }
+  */
+})();
+</script>
+<div class="wrap">
+<header>
+ <div><h1>Khám phá phương pháp chưng cất</h1><div class="subtitle">Phòng thí nghiệm ảo · Hóa học 11 · Tách biệt và tinh chế hợp chất hữu cơ</div></div>
+ <div style="text-align:right">
+  <div class="tag">MÔ PHỎNG 2D TƯƠNG TÁC</div>
+  <div style="margin-top:7px;font-size:12px;font-weight:700;color:#58758b;letter-spacing:.2px">Sản phẩm của: Lê Đình 11A4</div>
+ </div>
+</header>
+<div class="grid">
+<section class="card">
+ <div class="cardhead"><h2>Quan sát thí nghiệm chưng cất</h2><span class="micro" id="phase">● Sẵn sàng</span></div>
+ <div class="scene">
+ <svg viewBox="0 0 900 570" role="img" aria-label="Mô phỏng bộ dụng cụ chưng cất với bình cầu, nhiệt kế, ống sinh hàn, dòng nước làm lạnh và bình hứng">
+ <defs>
+  <linearGradient id="glass" x1="0" x2="1"><stop stop-color="#c9efff" stop-opacity=".7"/><stop offset=".45" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#8ed8f0" stop-opacity=".58"/></linearGradient>
+  <linearGradient id="mix" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe28e"/><stop offset="1" stop-color="#efa92d"/></linearGradient>
+  <linearGradient id="cool" x1="0" x2="1"><stop stop-color="#b5eff9"/><stop offset="1" stop-color="#43b8e0"/></linearGradient>
+  <linearGradient id="collected" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe69b"/><stop offset="1" stop-color="#e9a82e"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="9"/></filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+  <marker id="arrB" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="#249bd0"/></marker>
+  <marker id="arrG" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="#e6a32b"/></marker>
+  <clipPath id="flaskClip"><path d="M205 160L205 262C205 281 157 306 157 367C157 424 199 453 252 453C305 453 347 424 347 367C347 306 299 281 299 262L299 160Z"/></clipPath>
+  <clipPath id="receiverClip"><path d="M701 397L701 478Q701 498 748 498Q795 498 795 478L795 397Z"/></clipPath>
+ </defs>
+ <rect x="10" y="10" width="880" height="550" rx="22" fill="#f8fcff" stroke="#dcebf4"/>
+ <circle cx="770" cy="83" r="38" fill="#e7f6fc"/><circle cx="770" cy="83" r="22" fill="#d4f0fa"/>
+ <path d="M38 492H862" stroke="#c6d9e5" stroke-width="3"/>
+ <!-- support stand -->
+ <path d="M92 105V488M67 488H117M92 128H174" stroke="#829aaa" stroke-width="6" stroke-linecap="round" fill="none"/>
+ <path d="M163 128V178" stroke="#829aaa" stroke-width="5"/>
+ <!-- boiling flask neck and body -->
+ <path d="M205 160L205 262C205 281 157 306 157 367C157 424 199 453 252 453C305 453 347 424 347 367C347 306 299 281 299 262L299 160Z" fill="url(#glass)" stroke="#438bad" stroke-width="4"/>
+ <g clip-path="url(#flaskClip)">
+  <rect x="145" y="345" width="215" height="120" fill="url(#mix)" id="mixtureFill"/>
+  <path d="M145 345Q195 335 245 345T360 345" stroke="#e6a02b" stroke-width="3" fill="none"/>
+  <g id="bubbles" opacity="0">
+   <circle class="bubble" cx="198" cy="412" r="5" fill="#fff7d6" stroke="#e3a53a"/><circle class="bubble" cx="235" cy="391" r="4" fill="#fff7d6" stroke="#e3a53a"/><circle class="bubble" cx="281" cy="420" r="6" fill="#fff7d6" stroke="#e3a53a"/><circle class="bubble" cx="316" cy="390" r="3.5" fill="#fff7d6" stroke="#e3a53a"/>
+  </g>
+ </g>
+ <path d="M205 160H299" stroke="#438bad" stroke-width="4"/>
+ <text x="252" y="474" text-anchor="middle" font-size="15" font-weight="700" fill="#23475f">Bình cầu</text>
+ <text x="252" y="491" text-anchor="middle" font-size="11" fill="#71899b">Hỗn hợp cần tách</text>
+ <!-- heater -->
+ <ellipse cx="252" cy="442" rx="92" ry="22" fill="#ffca65" opacity="0" id="heatAura" filter="url(#glow)"/>
+ <rect x="177" y="450" width="150" height="28" rx="9" fill="#f5c46b" stroke="#dca23d" stroke-width="2"/>
+ <rect x="188" y="455" width="128" height="7" rx="4" fill="#ffe4a6"/>
+ <g id="flames" opacity="0">
+  <path d="M205 450Q187 426 208 410Q208 429 220 432Q235 411 229 397Q257 420 242 450Z" fill="#ff9f43"/>
+  <path d="M250 450Q236 429 254 413Q257 429 267 432Q282 414 276 402Q300 425 285 450Z" fill="#ffb94f"/>
+  <path d="M286 450Q275 432 291 419Q293 431 301 433Q313 420 308 411Q327 432 315 450Z" fill="#ff9b42"/>
+ </g>
+ <text x="252" y="518" text-anchor="middle" font-size="12" fill="#986b22" font-weight="700">Nguồn gia nhiệt</text>
+ <!-- thermometer -->
+ <path d="M252 160V111H305" stroke="#438bad" stroke-width="4" fill="none"/>
+ <rect x="290" y="54" width="12" height="83" rx="6" fill="#fff" stroke="#7e9bad" stroke-width="2"/>
+ <rect x="294" y="103" width="4" height="27" rx="2" fill="#e56c69" id="thermoMercury"/>
+ <circle cx="296" cy="135" r="7" fill="#e56c69"/>
+ <text x="312" y="65" font-size="13" fill="#284b64" font-weight="700">Nhiệt kế</text>
+ <!-- vapor delivery tube -->
+ <path d="M299 111H392Q411 111 411 131V184" stroke="#438bad" stroke-width="17" fill="none" stroke-linejoin="round"/>
+ <path d="M299 111H392Q411 111 411 131V184" stroke="#f4fdff" stroke-width="8" fill="none" stroke-linejoin="round"/>
+ <path d="M299 111H392Q411 111 411 131V184" stroke="#e5a12c" stroke-width="3.5" fill="none" stroke-dasharray="8 12" opacity="0" id="vaporDash"/>
+ <text x="350" y="88" text-anchor="middle" font-size="12" fill="#59778c">Ống dẫn hơi</text>
+ <!-- condenser jacket -->
+ <path d="M411 184L653 355" stroke="#4d93b5" stroke-width="76" stroke-linecap="round" opacity=".95"/>
+ <path d="M411 184L653 355" stroke="url(#cool)" stroke-width="66" stroke-linecap="round"/>
+ <path d="M411 184L653 355" stroke="#4b8faf" stroke-width="17" stroke-linecap="round"/>
+ <path d="M411 184L653 355" stroke="#f9feff" stroke-width="8" stroke-linecap="round"/>
+ <!-- inner vapor -->
+ <path d="M411 184L653 355" stroke="#e5a12c" stroke-width="4" stroke-dasharray="9 14" opacity="0" id="innerVapor"/>
+ <!-- water inlet/outlet branches -->
+ <path d="M461 219L438 277L396 277" stroke="#279ed1" stroke-width="10" fill="none" stroke-linecap="round"/>
+ <path d="M606 321L632 262L680 262" stroke="#279ed1" stroke-width="10" fill="none" stroke-linecap="round"/>
+ <path d="M397 277H365" stroke="#279ed1" stroke-width="3" marker-end="url(#arrB)"/>
+ <path d="M680 262H713" stroke="#279ed1" stroke-width="3" marker-end="url(#arrB)"/>
+ <text x="365" y="302" text-anchor="middle" font-size="13" fill="#137eae" font-weight="700">Nước vào</text>
+ <text x="365" y="318" text-anchor="middle" font-size="11" fill="#4389a9">đầu dưới</text>
+ <text x="735" y="243" text-anchor="middle" font-size="13" fill="#137eae" font-weight="700">Nước ra</text>
+ <text x="735" y="259" text-anchor="middle" font-size="11" fill="#4389a9">đầu trên</text>
+ <text x="527" y="147" text-anchor="middle" font-size="14" fill="#23475f" font-weight="700">Ống sinh hàn</text>
+ <text x="527" y="165" text-anchor="middle" font-size="11" fill="#56788e">Áo nước làm lạnh</text>
+ <!-- moving water stream particles -->
+ <g id="waterDots" opacity="0" fill="#eaffff" stroke="#2b9dc8" stroke-width="1.2">
+  <circle r="4"><animateMotion dur="2.8s" repeatCount="indefinite" path="M396 277L438 277L461 219L606 321L632 262L680 262"/></circle>
+  <circle r="3.5"><animateMotion dur="2.8s" begin="-1s" repeatCount="indefinite" path="M396 277L438 277L461 219L606 321L632 262L680 262"/></circle>
+  <circle r="3"><animateMotion dur="2.8s" begin="-2s" repeatCount="indefinite" path="M396 277L438 277L461 219L606 321L632 262L680 262"/></circle>
+ </g>
+ <!-- condensate droplets along condenser to receiver -->
+ <g id="condensate" opacity="0">
+  <circle r="5" fill="#efb844"><animateMotion dur="2.2s" repeatCount="indefinite" path="M420 190L653 355L696 390"/></circle>
+  <circle r="4" fill="#f6cd70"><animateMotion dur="2.2s" begin="-.75s" repeatCount="indefinite" path="M420 190L653 355L696 390"/></circle>
+  <circle r="3.5" fill="#e9a42d"><animateMotion dur="2.2s" begin="-1.5s" repeatCount="indefinite" path="M420 190L653 355L696 390"/></circle>
+ </g>
+ <!-- receiver -->
+ <path d="M653 355L704 393V478Q704 500 750 500Q796 500 796 478V393" fill="url(#glass)" stroke="#438bad" stroke-width="4"/>
+ <path d="M704 393H796" stroke="#438bad" stroke-width="4"/>
+ <g clip-path="url(#receiverClip)">
+  <rect id="receiverFill" x="696" y="487" width="110" height="20" fill="url(#collected)"/>
+  <path id="receiverWave" d="M700 486Q725 480 750 486T800 486" stroke="#d99c2c" stroke-width="3" fill="none"/>
+ </g>
+ <text x="750" y="526" text-anchor="middle" font-size="14" fill="#23475f" font-weight="700">Bình hứng</text>
+ <text x="750" y="542" text-anchor="middle" font-size="10" fill="#71899b">Chất lỏng ngưng tụ</text>
+ <!-- animated particles on vapor path -->
+ <g id="vaporParticles" opacity="0" fill="#f4b73f" stroke="#d58e1e" stroke-width="1">
+  <circle r="5"><animateMotion dur="2.5s" repeatCount="indefinite" path="M302 111H392Q411 111 411 131V184L653 355"/></circle>
+  <circle r="4"><animateMotion dur="2.5s" begin="-.8s" repeatCount="indefinite" path="M302 111H392Q411 111 411 131V184L653 355"/></circle>
+  <circle r="3.5"><animateMotion dur="2.5s" begin="-1.6s" repeatCount="indefinite" path="M302 111H392Q411 111 411 131V184L653 355"/></circle>
+ </g>
+ <!-- callout -->
+ <rect x="30" y="28" width="250" height="48" rx="12" fill="#e8f5fc" stroke="#cde8f5"/>
+ <text x="46" y="48" font-size="12" font-weight="700" fill="#24617f">MÔ HÌNH CHƯNG CẤT ĐƠN GIẢN</text>
+ <text x="46" y="64" font-size="10" fill="#668398">Quan sát đường đi của hơi và nước làm lạnh</text>
+
+ <!-- ===== WATERMARK TĨNH (SVG) ===== -->
+ <g id="wm-layer" opacity="0.16" pointer-events="none">
+  <text x="450" y="285" text-anchor="middle" font-size="34" font-weight="900"
+        fill="#249bd0" transform="rotate(-22 450 285)"
+        style="letter-spacing:2px;user-select:none">© LÊ ĐÌNH · 11A4</text>
+  <text x="160" y="120" text-anchor="middle" font-size="16" font-weight="700"
+        fill="#269879" transform="rotate(-18 160 120)"
+        style="user-select:none">Lê Đình</text>
+  <text x="760" y="470" text-anchor="middle" font-size="16" font-weight="700"
+        fill="#f2b544" transform="rotate(-18 760 470)"
+        style="user-select:none">Lê Đình</text>
+  <text x="470" y="470" text-anchor="middle" font-size="14" font-weight="700"
+        fill="#8ea9bb" transform="rotate(-22 470 470)"
+        style="user-select:none">© Lê Đình 11A4</text>
+ </g>
+ <!-- ===== HẾT WATERMARK TĨNH ===== -->
+ </svg>
+ </div>
+ <div class="key"><span><i class="sw" style="background:#e7a52a"></i> Hơi / chất lỏng được thu</span><span><i class="sw" style="background:#249bd0"></i> Nước làm lạnh</span><span><i class="sw" style="background:#4d93b5"></i> Dụng cụ thủy tinh</span></div>
+ <div class="controls">
+  <div class="buttons">
+   <button class="primary" id="start">▶ Bắt đầu</button><button id="pause">Ⅱ Tạm dừng</button><button id="reset">↻ Làm lại</button><button class="softblue" id="speed">Tốc độ: 1×</button>
+  </div>
+  <div class="status"><i class="dot" id="dot"></i><span id="statusText">Nhấn Bắt đầu để xem hỗn hợp được gia nhiệt, bay hơi và ngưng tụ.</span></div>
+  <div class="progress"><div id="bar"></div></div>
+  <div class="micro" style="margin-top:8px">Hoạt ảnh minh họa nguyên lí, không biểu diễn nhiệt độ hoặc tốc độ thực nghiệm.</div>
+ </div>
+</section>
+<aside class="side">
+ <section class="card">
+  <div class="cardhead"><h2>Diễn biến quá trình</h2><span class="micro">Chọn từng bước</span></div>
+  <div class="pad">
+   <div class="tabs"><button class="tab selected" data-step="1">1. Gia nhiệt</button><button class="tab" data-step="2">2. Bay hơi</button><button class="tab" data-step="3">3. Ngưng tụ</button><button class="tab" data-step="4">4. Thu sản phẩm</button></div>
+   <div class="explain" id="explain"><strong>Gia nhiệt:</strong> Hỗn hợp trong bình cầu nhận nhiệt. Các phân tử chuyển động nhanh hơn; thành phần dễ bay hơi chuyển sang pha hơi ưu tiên.</div>
+  </div>
+ </section>
+ <section class="card">
+  <div class="cardhead"><h2>Nhận diện dụng cụ</h2><span class="micro">Kiến thức trọng tâm</span></div>
+  <div class="pad">
+   <div class="step"><span class="num">1</span><div><b>Bình cầu</b><p>Chứa hỗn hợp cần chưng cất.</p></div></div>
+   <div class="step"><span class="num">2</span><div><b>Nhiệt kế</b><p>Theo dõi nhiệt độ hơi ở vị trí đầu chưng cất.</p></div></div>
+   <div class="step"><span class="num">3</span><div><b>Ống sinh hàn</b><p>Làm lạnh hơi để hơi ngưng tụ thành chất lỏng.</p></div></div>
+   <div class="step"><span class="num">4</span><div><b>Bình hứng</b><p>Thu chất lỏng sau khi ngưng tụ.</p></div></div>
+   <div class="tip"><b>Điểm cần nhớ:</b> Nước làm lạnh đi vào ở đầu nối phía dưới và đi ra ở đầu nối phía trên của áo nước sinh hàn. Hai dòng nước và hơi không trộn lẫn.</div>
+  </div>
+ </section>
+</aside>
+</div>
+<div class="bottom">
+<section class="card">
+ <div class="cardhead"><h2>Phiếu kiểm chứng mô phỏng</h2><span class="micro">Đánh dấu sau khi quan sát</span></div>
+ <div class="pad">
+  <div class="checkgrid" id="checks">
+   <label><input type="checkbox"> Bình cầu chứa hỗn hợp được thể hiện.</label>
+   <label><input type="checkbox"> Nhiệt kế ở vị trí theo dõi nhiệt độ hơi.</label>
+   <label><input type="checkbox"> Hơi đi từ bình cầu đến ống sinh hàn.</label>
+   <label><input type="checkbox"> Nước làm lạnh vào từ đầu dưới.</label>
+   <label><input type="checkbox"> Nước làm lạnh ra ở đầu trên.</label>
+   <label><input type="checkbox"> Hơi được làm lạnh và ngưng tụ.</label>
+   <label><input type="checkbox"> Chất lỏng được thu vào bình hứng.</label>
+   <label><input type="checkbox"> Mô hình nêu giới hạn áp dụng.</label>
+  </div>
+  <div class="count" id="count">Đã kiểm tra 0/8 tiêu chí.</div>
+ </div>
+</section>
+<section class="card">
+ <div class="cardhead"><h2>Thử thách nhanh</h2><span class="micro">Kiểm tra kiến thức</span></div>
+ <div class="pad quiz">
+  <b style="font-size:13px">Nước làm lạnh nên đi vào ống sinh hàn từ vị trí nào?</b>
+  <label><input type="radio" name="q" value="a"> Đầu phía trên</label>
+  <label><input type="radio" name="q" value="b"> Đầu phía dưới</label>
+  <label><input type="radio" name="q" value="c"> Cả hai đầu cùng lúc</label>
+  <button class="primary" id="answer">Kiểm tra</button><div class="feedback" id="feedback" aria-live="polite"></div>
+ </div>
+</section>
+</div>
+<footer>Mô phỏng học tập do AI hỗ trợ thiết kế. Đây là sơ đồ nguyên lí, không phải hướng dẫn lắp ráp hoặc tiến hành thí nghiệm thật.<br>Thí nghiệm thực tế chỉ được thực hiện trong phòng thí nghiệm phù hợp, dưới sự giám sát của giáo viên và theo quy trình an toàn.</footer>
+</div>
+<script>
+/* ===== WATERMARK ĐỘNG — TỰ PHỤC HỒI NẾU BỊ XÓA ===== */
+(function(){
+  var WM = '© Lê Đình · 11A4';
+  var NS = 'http://www.w3.org/2000/svg';
+  function addWM(){
+    var svg = document.querySelector('.scene svg');
+    if (!svg) return;
+    if (svg.querySelector('#wm-dyn')) return;
+    var g = document.createElementNS(NS,'g');
+    g.id = 'wm-dyn';
+    g.setAttribute('opacity','0.10');
+    g.setAttribute('pointer-events','none');
+    var t = document.createElementNS(NS,'text');
+    t.setAttribute('x','450'); t.setAttribute('y','200');
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','26'); t.setAttribute('font-weight','900');
+    t.setAttribute('fill','#18334b');
+    t.setAttribute('transform','rotate(-22 450 200)');
+    t.setAttribute('style','letter-spacing:3px;user-select:none');
+    t.textContent = WM;
+    g.appendChild(t);
+    svg.appendChild(g);
+  }
+  function guard(){
+    addWM();
+    if (window.MutationObserver){
+      new MutationObserver(function(){ addWM(); }).observe(document.body,{childList:true,subtree:true});
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', guard);
+  } else {
+    guard();
+  }
+})();
+</script>
+<script>
+const stages=[
+ {name:"Gia nhiệt",text:"Hỗn hợp trong bình cầu nhận nhiệt. Các phân tử chuyển động nhanh hơn; thành phần dễ bay hơi chuyển sang pha hơi ưu tiên."},
+ {name:"Bay hơi",text:"Hơi của thành phần dễ bay hơi được dẫn từ bình cầu qua ống dẫn đến ống sinh hàn."},
+ {name:"Ngưng tụ",text:"Nước làm lạnh lưu thông trong áo nước, lấy nhiệt từ hơi. Hơi nguội đi và chuyển thành chất lỏng."},
+ {name:"Thu sản phẩm",text:"Chất lỏng sau ngưng tụ chảy vào bình hứng. Thành phần ít bay hơi hơn có thể còn lại trong bình cầu."}
+];
+let progress=0,interval=null,running=false,speed=1;
+const el=id=>document.getElementById(id);
+function stage(n,manual=false){
+ document.querySelectorAll("[data-step]").forEach(b=>b.classList.toggle("selected",+b.dataset.step===n));
+ el("explain").innerHTML="<strong>"+stages[n-1].name+":</strong> "+stages[n-1].text;
+ if(manual){progress=[0,18,43,72,91][n];render(false)}
+}
+document.querySelectorAll("[data-step]").forEach(b=>b.addEventListener("click",()=>stage(+b.dataset.step,true)));
+function render(autoStage=true){
+ const p=progress;
+ el("bar").style.width=p+"%";
+ el("phase").textContent="● "+(p===0?"Sẵn sàng":p<18?"Đang gia nhiệt":p<43?"Đang bay hơi":p<78?"Đang ngưng tụ":"Đang thu chất lỏng");
+ el("statusText").textContent=p===0?"Nhấn Bắt đầu để xem hỗn hợp được gia nhiệt, bay hơi và ngưng tụ.":p<18?"Nguồn nhiệt hoạt động, hỗn hợp trong bình cầu nóng lên.":p<43?"Các phân tử ở pha hơi di chuyển qua ống dẫn.":p<78?"Hơi đi qua ống sinh hàn và được nước làm lạnh lấy nhiệt.":"Chất lỏng ngưng tụ chảy về bình hứng.";
+ el("dot").classList.toggle("live",running);
+ el("heatAura").style.opacity=p>0?Math.min(.8,p/25):0;
+ el("flames").style.opacity=p>0?1:0;
+ el("bubbles").style.opacity=p>12?1:0;
+ el("thermoMercury").setAttribute("height",Math.min(43,17+p*.25));
+ el("thermoMercury").setAttribute("y",130-Math.min(43,17+p*.25));
+ ["vaporDash","innerVapor","vaporParticles"].forEach(id=>el(id).style.opacity=p>18?1:0);
+ el("waterDots").style.opacity=p>25?1:0;
+ el("condensate").style.opacity=p>43?1:0;
+ const h=Math.max(4,Math.min(67,(p-43)*1.05));
+ el("receiverFill").setAttribute("y",497-h);
+ el("receiverFill").setAttribute("height",h+8);
+ el("receiverWave").setAttribute("d",`M700 ${497-h}Q725 ${491-h} 750 ${497-h}T800 ${497-h}`);
+ if(autoStage)stage(p<18?1:p<43?2:p<78?3:4);
+}
+function stop(){running=false;if(interval)clearInterval(interval);interval=null;render(false)}
+el("start").addEventListener("click",()=>{
+ if(running)return;
+ if(progress>=100)progress=0;
+ running=true;render();
+ interval=setInterval(()=>{progress=Math.min(100,progress+speed);render();if(progress>=100)stop()},125);
+});
+el("pause").addEventListener("click",stop);
+el("reset").addEventListener("click",()=>{stop();progress=0;render();stage(1)});
+el("speed").addEventListener("click",()=>{speed=speed===1?2:speed===2?0.5:1;el("speed").textContent="Tốc độ: "+speed+"×";if(running){stop();running=true;interval=setInterval(()=>{progress=Math.min(100,progress+speed);render();if(progress>=100)stop()},125);render()}});
+document.querySelectorAll("#checks input").forEach(c=>c.addEventListener("change",()=>{el("count").textContent="Đã kiểm tra "+document.querySelectorAll("#checks input:checked").length+"/8 tiêu chí."}));
+el("answer").addEventListener("click",()=>{
+ const v=document.querySelector('input[name="q"]:checked');
+ el("feedback").textContent=!v?"Hãy chọn một đáp án.":v.value==="b"?"Chính xác! Nước vào từ đầu dưới để áo nước được làm đầy, hạn chế túi khí.":"Chưa đúng. Hãy quan sát vị trí hai đầu nối nước trên ống sinh hàn rồi thử lại.";
+ el("feedback").style.color=v&&v.value==="b"?"#16815f":"#b36b1d";
+});
+render();stage(1);
+</script>
+</body>
+</html>
